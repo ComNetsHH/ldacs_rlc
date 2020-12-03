@@ -1,0 +1,4 @@
+.idea/
+cmake-build-debug/
+glue-lib
+glue-lib-headers
