@@ -23,8 +23,8 @@ protected:
 public:
     RlcProcess* getProcess(MacId mac_id);
     void receiveFromUpper(L3Packet* data, MacId dest, PacketPriority priority = PRIORITY_DEFAULT);
-    void receiveInjectionomLower(L2Packet* packet, PacketPriority priority = PRIORITY_LINK_MANAGEMENT);
-    virtual L2Packet* requestSegment(unsigned int num_bits, const MacId& mac_id);
+    void receiveInjectionFromLower(L2Packet* packet, PacketPriority priority = PRIORITY_LINK_MANAGEMENT);
+    L2Packet* requestSegment(unsigned int num_bits, const MacId& mac_id);
 };
 
 }

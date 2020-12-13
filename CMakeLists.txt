@@ -6,7 +6,7 @@ include_directories(glue-lib-headers)
 
 # Remove if not needed
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -I/usr/include -I/usr/local/include/ -L/usr/local/Cellar/cppunit/1.15.1/lib")
-set(TARGET_SRC Rlc.h Rlc.cpp RlcProcess.h RlcProcess.cpp)
+set(TARGET_SRC Rlc.h Rlc.cpp RlcProcess.h RlcProcess.cpp InetPacketPayload.cpp InetPacketPayload.hpp)
 set(TARGET_INCL glue-lib-headers/CPRPosition.hpp glue-lib-headers/IArq.hpp glue-lib-headers/IMac.hpp glue-lib-headers/IRlc.hpp glue-lib-headers/L2Header.hpp glue-lib-headers/L2Packet.hpp glue-lib-headers/MacId.hpp glue-lib-headers/SequenceNumber.cpp glue-lib-headers/SequenceNumber.hpp)
 
 add_library(tuhh_intairnet_rlc SHARED ${TARGET_SRC} ${TARGET_INCL})
