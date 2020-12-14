@@ -6,6 +6,7 @@
 #include "L2Header.hpp"
 #include "L2Packet.hpp"
 #include "InetPacketPayload.hpp"
+#include <iostream>
 
 using namespace std;
 using namespace TUHH_INTAIRNET_MCSOTDMA;
@@ -94,9 +95,13 @@ L3Packet* RlcProcess::getReassembledPacket() {
         idx++;
     }
 
+    if(firstEndIndex == -1 || firstStartIndex == -1) {
+        return nullptr;
+    }
+
     L2Packet::Payload * first_segment_payload = nullptr;
     int size = 0;
-    for (auto it = packets_received.begin() + firstStartIndex; it != packets_received.begin()+ firstEndIndex; it++) {
+    for (auto it = packets_received.begin() + firstStartIndex; it != packets_received.begin() + firstEndIndex +1; it++) {
         auto payload = it->second;
         if(payload) {
             size += payload->getBits();
@@ -116,6 +121,6 @@ L3Packet* RlcProcess::getReassembledPacket() {
         pkt->original = payload->original;
     }
 
-    packets_received.erase(packets_received.begin() + firstEndIndex, packets_received.begin() + firstEndIndex);
+    packets_received.erase(packets_received.begin() + firstStartIndex, packets_received.begin() + firstEndIndex+1);
     return pkt;
 }

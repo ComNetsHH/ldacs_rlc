@@ -6,6 +6,7 @@
 #include <cppunit/TestFixture.h>
 #include <cppunit/extensions/HelperMacros.h>
 #include "../RlcProcess.hpp"
+#include "../InetPacketPayload.hpp"
 
 using namespace TUHH_INTAIRNET_MCSOTDMA;
 using namespace TUHH_INTAIRNET_RLC;
@@ -49,10 +50,56 @@ public:
 
     }
 
+    void testReassembly() {
+        MacId dest(12);
+        RlcProcess process(dest);
+
+        /** Fragment 1 **/
+        L2HeaderUnicast *header1 = new L2HeaderUnicast(MacId(10), false, SEQNO_UNSET, SEQNO_UNSET, 0);
+        header1->is_pkt_start = true;
+        InetPacketPayload *payload1 = new InetPacketPayload();
+        payload1->size = 100;
+        payload1->original = nullptr;
+        PacketFragment frag1 = make_pair(header1, payload1);
+
+        /** Fragment 2 **/
+        L2HeaderUnicast *header2 = new L2HeaderUnicast(MacId(10), false, SEQNO_UNSET, SEQNO_UNSET, 0);
+        header2->is_pkt_end = true;
+        InetPacketPayload *payload2 = new InetPacketPayload();
+        payload2->size = 10;
+        payload2->original = nullptr;
+        PacketFragment frag2 = make_pair(header2, payload2);
+
+        /** Fragment 3 **/
+        L2HeaderUnicast *header3 = new L2HeaderUnicast(MacId(10), false, SEQNO_UNSET, SEQNO_UNSET, 0);
+        header3->is_pkt_end = true;
+        header3->is_pkt_start = true;
+        InetPacketPayload *payload3 = new InetPacketPayload();
+        payload3->size = 10;
+        payload3->original = nullptr;
+        PacketFragment frag3 = make_pair(header3, payload3);
+
+        process.receiveFromLower(frag1);
+
+        L3Packet *pkt = process.getReassembledPacket();
+        CPPUNIT_ASSERT(pkt == nullptr);
+
+        process.receiveFromLower(frag2);
+        pkt = process.getReassembledPacket();
+        CPPUNIT_ASSERT(pkt != nullptr);
+        CPPUNIT_ASSERT_EQUAL(110, pkt->size);
+
+        process.receiveFromLower(frag3);
+        pkt = process.getReassembledPacket();
+        CPPUNIT_ASSERT(pkt != nullptr);
+        CPPUNIT_ASSERT_EQUAL(10, pkt->size);
+    }
+
 
 CPPUNIT_TEST_SUITE(RlcProcessTest);
         CPPUNIT_TEST(macId);
         CPPUNIT_TEST(handleL3Packets);
         CPPUNIT_TEST(testInjection);
+        CPPUNIT_TEST(testReassembly);
     CPPUNIT_TEST_SUITE_END();
 };
