@@ -2,3 +2,5 @@
 cmake-build-debug/
 glue-lib
 glue-lib-headers
+
+.DS_Store

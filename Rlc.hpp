@@ -7,6 +7,7 @@
 
 #include <map>
 #include "IRlc.hpp"
+#include "IOmnetPluggable.hpp"
 #include "RlcProcess.hpp"
 
 using namespace TUHH_INTAIRNET_MCSOTDMA;
@@ -14,7 +15,7 @@ using namespace std;
 
 namespace TUHH_INTAIRNET_RLC {
 
-class Rlc : public IRlc {
+class Rlc : public IRlc, public IOmnetPluggable {
 protected:
 
     /** map to hold all RlcProcesses **/
@@ -27,6 +28,8 @@ public:
     L2Packet* requestSegment(unsigned int num_bits, const MacId& mac_id);
     void receiveFromLower(L2Packet* packet);
     bool isThereMoreData(const MacId& mac_id) const;
+
+    void onEvent(double time);
 };
 
 }

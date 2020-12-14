@@ -17,8 +17,8 @@ namespace inet {
 class InetPacketPayload : public L2Packet::Payload {
 public:
     inet::Packet* original = nullptr;
-    int size = 0;
-    int offset = 0;
+    unsigned int size = 0;
+    unsigned int offset = 0;
     unsigned int getBits() const;
 };
 
