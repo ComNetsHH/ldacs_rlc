@@ -2,12 +2,12 @@
 // Created by Konrad Fuger on 03.12.20.
 //
 
-#ifndef TUHH_INTAIRNET_RLC_RLC_H
-#define TUHH_INTAIRNET_RLC_RLC_H
+#ifndef TUHH_INTAIRNET_RLC_RLC_HPP
+#define TUHH_INTAIRNET_RLC_RLC_HPP
 
 #include <map>
 #include "IRlc.hpp"
-#include "RlcProcess.h"
+#include "RlcProcess.hpp"
 
 using namespace TUHH_INTAIRNET_MCSOTDMA;
 using namespace std;
@@ -29,4 +29,4 @@ public:
 
 }
 
-#endif //TUHH_INTAIRNET_RLC_RLC_H
+#endif //TUHH_INTAIRNET_RLC_RLC_HPP

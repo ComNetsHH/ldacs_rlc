@@ -2,7 +2,7 @@
 // Created by Konrad Fuger on 03.12.20.
 //
 
-#include "Rlc.h"
+#include "Rlc.hpp"
 #include <utility>
 
 using namespace TUHH_INTAIRNET_RLC;
@@ -10,7 +10,7 @@ using namespace TUHH_INTAIRNET_RLC;
 void Rlc::receiveFromUpper(L3Packet *data, MacId dest, PacketPriority priority) {
     auto process = getProcess(dest);
     if(process == nullptr) {
-        process = new RlcProcess();
+        process = new RlcProcess(dest);
         processes.insert(make_pair(dest, process));
     }
 
@@ -30,7 +30,7 @@ void Rlc::receiveInjectionFromLower(L2Packet *packet, PacketPriority priority) {
     MacId dest = packet->getDestination();
     auto process = getProcess(dest);
     if(process == nullptr) {
-        process = new RlcProcess();
+        process = new RlcProcess(dest);
         processes.insert(make_pair(dest, process));
     }
 

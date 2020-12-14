@@ -5,9 +5,8 @@
 
 #include <cppunit/TestFixture.h>
 #include <cppunit/extensions/HelperMacros.h>
-#include "../Rlc.h"
+#include "../Rlc.hpp"
 
-using namespace TUHH_INTAIRNET_RLC;
 using namespace TUHH_INTAIRNET_MCSOTDMA;
 
 class RlcTest : public CppUnit::TestFixture {

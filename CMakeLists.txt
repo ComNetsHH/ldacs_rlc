@@ -6,13 +6,13 @@ include_directories(glue-lib-headers)
 
 # Remove if not needed
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -I/usr/include -I/usr/local/include/ -L/usr/local/Cellar/cppunit/1.15.1/lib")
-set(TARGET_SRC Rlc.h Rlc.cpp RlcProcess.h RlcProcess.cpp InetPacketPayload.cpp InetPacketPayload.hpp)
+set(TARGET_SRC Rlc.hpp Rlc.cpp RlcProcess.hpp RlcProcess.cpp InetPacketPayload.cpp InetPacketPayload.hpp)
 set(TARGET_INCL glue-lib-headers/CPRPosition.hpp glue-lib-headers/IArq.hpp glue-lib-headers/IMac.hpp glue-lib-headers/IRlc.hpp glue-lib-headers/L2Header.hpp glue-lib-headers/L2Packet.hpp glue-lib-headers/MacId.hpp glue-lib-headers/SequenceNumber.cpp glue-lib-headers/SequenceNumber.hpp)
 
 add_library(tuhh_intairnet_rlc SHARED ${TARGET_SRC} ${TARGET_INCL})
 find_library(GLUE_LIBRARY intairnet_linklayer_glue HINTS glue-lib)
 target_link_libraries(tuhh_intairnet_rlc PUBLIC ${GLUE_LIBRARY})
 
-add_executable(unittests tests/unittests.cpp)
+add_executable(unittests tests/unittests.cpp tests/RlcProcessTest.cpp)
 target_link_libraries(unittests cppunit tuhh_intairnet_rlc)
 #target_link_libraries(unittests :libcppunit.so tuhh_intairnet_rlc)

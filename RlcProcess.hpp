@@ -2,8 +2,8 @@
 // Created by Konrad Fuger on 03.12.20.
 //
 
-#ifndef TUHH_INTAIRNET_RLC_RLCPROCESS_H
-#define TUHH_INTAIRNET_RLC_RLCPROCESS_H
+#ifndef TUHH_INTAIRNET_RLC_RLCPROCESS_HPP
+#define TUHH_INTAIRNET_RLC_RLCPROCESS_HPP
 
 #include <deque>
 #include <utility>
@@ -21,6 +21,8 @@ protected:
     deque<L2Packet *> packets_received;
     deque<L2Packet *> injected_packets;
 public:
+    RlcProcess(MacId id);
+    MacId getMacId();
     void receiveFromUpper(L3Packet* data, PacketPriority priority = PRIORITY_DEFAULT);
     void receiveInjectionFromLower(L2Packet* packet, PacketPriority priority = PRIORITY_LINK_MANAGEMENT);
     L2Packet* getInjectedPacket();
@@ -28,4 +30,4 @@ public:
     bool hasDataToSend();
 };
 
-#endif //TUHH_INTAIRNET_RLC_RLCPROCESS_H
+#endif //TUHH_INTAIRNET_RLC_RLCPROCESS_HPP
