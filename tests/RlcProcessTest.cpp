@@ -37,9 +37,21 @@ public:
         CPPUNIT_ASSERT_EQUAL(process.hasDataToSend(), false);
     }
 
+    void testInjection() {
+        MacId dest(12);
+        RlcProcess process(dest);
+        L2Packet *pkt = new L2Packet();
+
+        CPPUNIT_ASSERT(process.getInjectedPacket() == nullptr);
+        process.receiveInjectionFromLower(pkt);
+        CPPUNIT_ASSERT_EQUAL(process.getInjectedPacket(), pkt);
+
+    }
+
 
 CPPUNIT_TEST_SUITE(RlcProcessTest);
         CPPUNIT_TEST(macId);
         CPPUNIT_TEST(handleL3Packets);
+        CPPUNIT_TEST(testInjection);
     CPPUNIT_TEST_SUITE_END();
 };
