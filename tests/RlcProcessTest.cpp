@@ -8,6 +8,7 @@
 #include "../RlcProcess.hpp"
 
 using namespace TUHH_INTAIRNET_MCSOTDMA;
+using namespace TUHH_INTAIRNET_RLC;
 
 class RlcProcessTest : public CppUnit::TestFixture {
 

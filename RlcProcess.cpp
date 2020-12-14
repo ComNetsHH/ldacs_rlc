@@ -9,6 +9,7 @@
 
 using namespace std;
 using namespace TUHH_INTAIRNET_MCSOTDMA;
+using namespace TUHH_INTAIRNET_RLC;
 
 RlcProcess::RlcProcess(MacId id): dest(id) {
 
@@ -59,4 +60,12 @@ L2Packet* RlcProcess::getInjectedPacket() {
 
 bool RlcProcess::hasDataToSend() {
     return !packets_to_send.empty() || !injected_packets.empty();
+}
+
+void RlcProcess::receiveFromLower(L2Packet *pkt) {
+    packets_received.push_back(pkt);
+}
+
+L3Packet* RlcProcess::getReassembledPacket() {
+    return new L3Packet();
 }

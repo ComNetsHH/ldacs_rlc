@@ -7,6 +7,22 @@
 
 using namespace TUHH_INTAIRNET_RLC;
 
+void Rlc::receiveFromLower(L2Packet* packet) {
+    MacId src = packet->getOrigin();
+    auto process = getProcess(src);
+    if(process == nullptr) {
+        process = new RlcProcess(src);
+        processes.insert(make_pair(src, process));
+    }
+    process->receiveFromLower(packet);
+    L3Packet * pkt = process->getReassembledPacket();
+    auto nwLayer = getUpperLayer();
+
+    if(pkt && nwLayer) {
+        nwLayer->receiveFromLower(pkt);
+    }
+}
+
 void Rlc::receiveFromUpper(L3Packet *data, MacId dest, PacketPriority priority) {
     auto process = getProcess(dest);
     if(process == nullptr) {
@@ -17,7 +33,7 @@ void Rlc::receiveFromUpper(L3Packet *data, MacId dest, PacketPriority priority) 
     process->receiveFromUpper(data, priority);
 }
 
-RlcProcess* Rlc::getProcess(MacId mac_id) {
+RlcProcess* Rlc::getProcess(MacId mac_id) const {
     auto result = processes.find(mac_id);
 
     if(result == processes.end()) {
@@ -59,6 +75,14 @@ L2Packet * Rlc::requestSegment(unsigned int num_bits, const MacId &mac_id) {
     }
 
     return packet;
+}
+
+bool Rlc::isThereMoreData(const MacId& mac_id) const{
+    auto process = getProcess(mac_id);
+    if(!process) {
+        return false;
+    }
+    return process->hasDataToSend();
 }
 
 

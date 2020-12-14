@@ -21,10 +21,12 @@ protected:
     map<MacId, RlcProcess*> processes;
 
 public:
-    RlcProcess* getProcess(MacId mac_id);
+    RlcProcess* getProcess(MacId mac_id) const;
     void receiveFromUpper(L3Packet* data, MacId dest, PacketPriority priority = PRIORITY_DEFAULT);
     void receiveInjectionFromLower(L2Packet* packet, PacketPriority priority = PRIORITY_LINK_MANAGEMENT);
     L2Packet* requestSegment(unsigned int num_bits, const MacId& mac_id);
+    void receiveFromLower(L2Packet* packet);
+    bool isThereMoreData(const MacId& mac_id) const;
 };
 
 }
