@@ -62,10 +62,60 @@ bool RlcProcess::hasDataToSend() {
     return !packets_to_send.empty() || !injected_packets.empty();
 }
 
-void RlcProcess::receiveFromLower(L2Packet *pkt) {
-    packets_received.push_back(pkt);
+void RlcProcess::receiveFromLower(PacketFragment fragment) {
+    packets_received.push_back(fragment);
 }
 
 L3Packet* RlcProcess::getReassembledPacket() {
-    return new L3Packet();
+    // Fragments are delivered in order. Therefore we only need to find where a packet starts and where it ends
+    // Later we delete all frags involved
+    int firstStartIndex = -1;
+    int firstEndIndex = -1;
+    int idx = 0;
+    for(auto it = packets_received.begin(); it != packets_received.end(); it++) {
+        auto header = it->first;
+        if(header->frame_type == L2Header::FrameType::unicast) {
+            L2HeaderUnicast *unicast_header= dynamic_cast<L2HeaderUnicast*>(header);
+            if(unicast_header->is_pkt_start && firstStartIndex < 0) {
+                firstStartIndex = idx;
+            }
+            if(unicast_header->is_pkt_end && firstEndIndex < 0) {
+                firstEndIndex = idx;
+            }
+        }else if(header->frame_type == L2Header::FrameType::broadcast) {
+            L2HeaderBroadcast *broadcast_header= dynamic_cast<L2HeaderBroadcast*>(header);
+            if(broadcast_header->is_pkt_start && firstStartIndex < 0) {
+                firstStartIndex = idx;
+            }
+            if(broadcast_header->is_pkt_end && firstEndIndex < 0) {
+                firstEndIndex = idx;
+            }
+        }
+        idx++;
+    }
+
+    L2Packet::Payload * first_segment_payload = nullptr;
+    int size = 0;
+    for (auto it = packets_received.begin() + firstStartIndex; it != packets_received.begin()+ firstEndIndex; it++) {
+        auto payload = it->second;
+        if(payload) {
+            size += payload->getBits();
+            if(it == packets_received.begin() + firstStartIndex ) {
+                first_segment_payload = payload;
+            }
+        }
+    }
+
+    L3Packet *pkt = new L3Packet();
+    pkt->offset = 0;
+    pkt->size = size;
+
+    InetPacketPayload * payload = dynamic_cast<InetPacketPayload *>(first_segment_payload);
+
+    if(payload != nullptr) {
+        pkt->original = payload->original;
+    }
+
+    packets_received.erase(packets_received.begin() + firstEndIndex, packets_received.begin() + firstEndIndex);
+    return pkt;
 }

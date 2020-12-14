@@ -5,6 +5,7 @@
 #include "Rlc.hpp"
 #include <utility>
 
+using namespace std;
 using namespace TUHH_INTAIRNET_RLC;
 
 void Rlc::receiveFromLower(L2Packet* packet) {
@@ -14,7 +15,14 @@ void Rlc::receiveFromLower(L2Packet* packet) {
         process = new RlcProcess(src);
         processes.insert(make_pair(src, process));
     }
-    process->receiveFromLower(packet);
+    auto headers = packet->getHeaders();
+    auto payloads = packet->getPayloads();
+
+    for(int i = 0; i< headers.size(); i++) {
+        PacketFragment frag = make_pair(headers[i], payloads[i]);
+        process->receiveFromLower(frag);
+    }
+
     L3Packet * pkt = process->getReassembledPacket();
     auto nwLayer = getUpperLayer();
 
