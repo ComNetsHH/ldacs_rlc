@@ -34,6 +34,7 @@ public:
     void receiveInjectionFromLower(L2Packet* packet, PacketPriority priority = PRIORITY_LINK_MANAGEMENT);
     L2Packet* getInjectedPacket();
     pair<L2Header*, L2Packet::Payload*> getData(unsigned int num_bits);
+    pair<L2Header*, L2Packet::Payload*> getEmptyData();
     bool hasDataToSend();
     L3Packet* getReassembledPacket();
 };

@@ -20,6 +20,17 @@ MacId RlcProcess::getMacId() {
     return dest;
 }
 
+pair<L2Header*, L2Packet::Payload*> RlcProcess::getEmptyData() {
+    auto header = new L2HeaderUnicast(L2Header::FrameType::unicast);
+    auto payload = new InetPacketPayload();
+    header->is_pkt_end = true;
+    header->is_pkt_start = true;
+    header->icao_dest_id = dest;
+    payload->size = 0;
+    payload->offset = 0;
+    return {header, payload};
+}
+
 pair<L2Header*, L2Packet::Payload*> RlcProcess::getData(unsigned int num_bits) {
     L3Packet *next_L3_packet = packets_to_send.front();
     unsigned int remaining_packet_size = next_L3_packet->size - next_L3_packet->offset;
