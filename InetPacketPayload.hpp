@@ -20,6 +20,8 @@ public:
     unsigned int size = 0;
     unsigned int offset = 0;
     unsigned int getBits() const;
+
+	Payload* copy() const override;
 };
 
 
