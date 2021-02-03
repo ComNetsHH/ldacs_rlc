@@ -21,7 +21,7 @@ public:
     unsigned int offset = 0;
     unsigned int getBits() const;
 
-	Payload* copy() const override;
+    Payload* copy() const override;
 };
 
 
