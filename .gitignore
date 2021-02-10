@@ -2,5 +2,10 @@
 cmake-build-debug/
 glue-lib
 glue-lib-headers
-
+CMakeCache.txt
+CMakeFiles/
+Makefile
+Testing/
+cmake_install.cmake
+tuhh_intairnet_rlc.cbp
 .DS_Store

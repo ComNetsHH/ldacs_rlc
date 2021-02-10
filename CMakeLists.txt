@@ -16,4 +16,6 @@ add_library(tuhh_intairnet_rlc SHARED ${TARGET_SRC} ${GLUE_SRC_HPP})
 target_link_libraries(tuhh_intairnet_rlc LINK_PUBLIC intairnet_linklayer_glue)
 
 add_executable(unittests ${TARGET_SRC} ${TARGET_TEST_SRC} ${GLUE_SRC_HPP})
+
 target_link_libraries(unittests cppunit tuhh_intairnet_rlc)
+

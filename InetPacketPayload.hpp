@@ -21,9 +21,7 @@ public:
     unsigned int offset = 0;
     unsigned int getBits() const;
 
-    L2Packet::Payload * copy() const {
-        return (L2Packet::Payload*) this;
-    }
+    Payload* copy() const override;
 };
 
 
