@@ -22,7 +22,7 @@ public:
 
     void handleL3Packets() {
         MacId dest(12);
-        RlcProcess process(dest);
+        RlcProcess process(dest, -1);
         L3Packet *pkt = new L3Packet();
         pkt->size = 1000;
         process.receiveFromUpper(pkt);
@@ -39,6 +39,25 @@ public:
         CPPUNIT_ASSERT_EQUAL(process.hasDataToSend(), false);
     }
 
+    void handleL3PacketsWithMaxPacketSize() {
+        MacId dest(12);
+        RlcProcess process(dest, 100);
+        L3Packet *pkt = new L3Packet();
+        pkt->size = 1000;
+        process.receiveFromUpper(pkt);
+
+        CPPUNIT_ASSERT_EQUAL(process.hasDataToSend(), true);
+
+        auto data = process.getData(500);
+        CPPUNIT_ASSERT_EQUAL(165,(int)(data.first->getBits() + data.second->getBits()) );
+        data = process.getData(500);
+        CPPUNIT_ASSERT_EQUAL(165,(int)(data.first->getBits() + data.second->getBits()) );
+        data = process.getData(500);
+        CPPUNIT_ASSERT_EQUAL(165,(int)(data.first->getBits() + data.second->getBits()) );
+
+        CPPUNIT_ASSERT_EQUAL(process.hasDataToSend(), true);
+    }
+
     void testInjection() {
         MacId dest(12);
         RlcProcess process(dest);
@@ -52,7 +71,7 @@ public:
 
     void testReassembly() {
         MacId dest(12);
-        RlcProcess process(dest);
+        RlcProcess process(dest, 100);
 
         /** Fragment 1 **/
         L2HeaderUnicast *header1 = new L2HeaderUnicast(MacId(10), false, SEQNO_UNSET, SEQNO_UNSET, 0);

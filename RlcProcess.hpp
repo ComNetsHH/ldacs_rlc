@@ -26,8 +26,12 @@ protected:
     deque<L2Packet *> injected_packets;
 
     deque<PacketFragment> packets_received;
+
+    /** maximum size of packet, if set all packets are at most this size **/
+    int max_packet_size = -1;
 public:
     RlcProcess(MacId id);
+    RlcProcess(MacId id, int max_packet_size);
     MacId getMacId();
     void receiveFromUpper(L3Packet* data, PacketPriority priority = PRIORITY_DEFAULT);
     void receiveFromLower(PacketFragment fragment);

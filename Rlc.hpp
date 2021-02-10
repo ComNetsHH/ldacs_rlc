@@ -21,7 +21,11 @@ protected:
     /** map to hold all RlcProcesses **/
     map<MacId, RlcProcess*> processes;
 
+    /** maximum size of packet, if set all packets are at most this size **/
+    int max_packet_size = -1;
+
 public:
+    Rlc(int min_packet_size);
     RlcProcess* getProcess(MacId mac_id) const;
     void receiveFromUpper(L3Packet* data, MacId dest, PacketPriority priority = PRIORITY_DEFAULT);
     void receiveInjectionFromLower(L2Packet* packet, PacketPriority priority = PRIORITY_LINK_MANAGEMENT);

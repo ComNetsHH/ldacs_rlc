@@ -15,7 +15,7 @@ class RlcTest : public CppUnit::TestFixture {
 
 public:
     void testProcessCreation() {
-        Rlc rlc;
+        Rlc rlc(-1);
         L3Packet * pkt = new L3Packet();
 
         auto process = rlc.getProcess(MacId(12));

@@ -15,7 +15,7 @@ void Rlc::receiveFromLower(L2Packet* packet) {
     MacId src = packet->getOrigin();
     auto process = getProcess(src);
     if(process == nullptr) {
-        process = new RlcProcess(src);
+        process = new RlcProcess(src, max_packet_size);
         processes.insert(make_pair(src, process));
     }
     auto headers = packet->getHeaders();
@@ -130,6 +130,11 @@ bool Rlc::isThereMoreData(const MacId& mac_id) const{
 
 void Rlc::onEvent(double time) {
 
+}
+
+
+Rlc::Rlc(int min_packet_size) {
+    this->max_packet_size = min_packet_size;
 }
 
 
