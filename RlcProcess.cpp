@@ -30,7 +30,7 @@ pair<L2Header*, L2Packet::Payload*> RlcProcess::getEmptyData() {
     auto payload = new InetPacketPayload();
     header->is_pkt_end = true;
     header->is_pkt_start = true;
-    header->icao_dest_id = dest;
+    header->dest_id = dest;
     payload->size = 0;
     payload->offset = 0;
     return {header, payload};
@@ -41,7 +41,7 @@ pair<L2Header*, L2Packet::Payload*> RlcProcess::getData(unsigned int num_bits) {
     unsigned int remaining_packet_size = next_L3_packet->size - next_L3_packet->offset;
     auto header = new L2HeaderUnicast(L2Header::FrameType::unicast);
     header->is_pkt_start = (next_L3_packet->offset == 0);
-    header->icao_dest_id = dest;
+    header->dest_id = dest;
 
     unsigned int remainig_payload_size = num_bits - header->getBits();
     unsigned int size = 0;

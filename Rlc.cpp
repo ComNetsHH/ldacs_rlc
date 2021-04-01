@@ -86,7 +86,7 @@ L2Packet * Rlc::requestSegment(unsigned int num_bits, const MacId &mac_id) {
     L2Packet* packet = process->getInjectedPacket();
     if(packet == nullptr) {
         packet = new L2Packet();
-        L2HeaderBase* base_header = new L2HeaderBase(mac_id, 0, 0, 0);
+        L2HeaderBase* base_header = new L2HeaderBase(mac_id, 0, 0, 0, 0);
         packet->addMessage(base_header, nullptr);
         debug("###" + to_string(base_header->getBits()));
     }
