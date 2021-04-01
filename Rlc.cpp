@@ -87,7 +87,7 @@ L2Packet * Rlc::requestSegment(unsigned int num_bits, const MacId &mac_id) {
     if(packet == nullptr) {
         packet = new L2Packet();
         L2HeaderBase* base_header = new L2HeaderBase(mac_id, 0, 0, 0);
-        packet->addPayload(base_header, nullptr);
+        packet->addMessage(base_header, nullptr);
         debug("###" + to_string(base_header->getBits()));
     }
 
@@ -99,7 +99,7 @@ L2Packet * Rlc::requestSegment(unsigned int num_bits, const MacId &mac_id) {
         pair<L2Header*, L2Packet::Payload*> data = process->getData(num_bits - packet->getBits());
         debug("Req Size: " + to_string(num_bits - packet->getBits()));
         debug("Rem Size: " + to_string(packet->getBits()));
-        packet->addPayload(data.first, data.second);
+        packet->addMessage(data.first, data.second);
 
         has_more_data = process->hasDataToSend();
         if(packet->getBits() >= num_bits) {
@@ -114,7 +114,7 @@ L2Packet * Rlc::requestSegment(unsigned int num_bits, const MacId &mac_id) {
     debug(packet->print());
     if(packet->getHeaders().size() <= 1) {
         auto data = process->getEmptyData();
-        packet->addPayload(data.first, data.second);
+        packet->addMessage(data.first, data.second);
     }
     debug(packet->print());
     return packet;

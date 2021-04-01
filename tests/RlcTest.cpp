@@ -28,9 +28,9 @@ public:
 
         L2Packet *lower_layer_pkt = new L2Packet();
         L2HeaderBase *base_header = new L2HeaderBase(MacId(10), 0, 0, 0);
-        lower_layer_pkt->addPayload(base_header, nullptr);
+        lower_layer_pkt->addMessage(base_header, nullptr);
         L2HeaderUnicast * unicast_header = new L2HeaderUnicast(MacId(10),false, SEQNO_UNSET, SEQNO_UNSET, 0);
-        lower_layer_pkt->addPayload(unicast_header, nullptr);
+        lower_layer_pkt->addMessage(unicast_header, nullptr);
 
 
         cout << lower_layer_pkt->getOrigin() << endl;
