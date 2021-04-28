@@ -39,6 +39,7 @@ void Rlc::receiveFromLower(L2Packet* packet) {
 
 void Rlc::receiveFromUpper(L3Packet *data, MacId dest, PacketPriority priority) {
     emit("Rlc:packet_received_from_upper(bits)", (double) data->size);
+    debug("Mac ID: " + to_string((int)dest.getId()));
     auto process = getProcess(dest);
     if(process == nullptr) {
         process = new RlcProcess(dest);
@@ -81,7 +82,7 @@ void Rlc::receiveInjectionFromLower(L2Packet *packet, PacketPriority priority) {
 
 L2Packet * Rlc::requestSegment(unsigned int num_bits, const MacId &mac_id) {
     emit("Rlc:packet_requested_from_lower(bits)", (double) num_bits);
-    debug("Mac ID: " + to_string((int)mac_id.getId()));
+    debug("Mac ID__: " + to_string((int)mac_id.getId()));
     auto process = getProcess(mac_id);
 
     if(process == nullptr) {
@@ -100,13 +101,14 @@ L2Packet * Rlc::requestSegment(unsigned int num_bits, const MacId &mac_id) {
     }
 
     bool has_more_data = process->hasDataToSend(); //packet->getBits() < num_bits;
-
+    debug("#-#-#" + to_string(process->getMacId().getId()));
     int counter = 0;
 
     while(has_more_data && counter < 100) {
         pair<L2Header*, L2Packet::Payload*> data = process->getData(num_bits - packet->getBits());
-        debug("Req Size: " + to_string(num_bits - packet->getBits()));
-        debug("Rem Size: " + to_string(packet->getBits()));
+        debug("Req_Size: " + to_string(num_bits - packet->getBits()));
+        debug("Rem_Size: " + to_string(packet->getBits()));
+        debug("MAC_ID" + to_string(process->getMacId().getId()));
         packet->addMessage(data.first, data.second);
 
         has_more_data = process->hasDataToSend();

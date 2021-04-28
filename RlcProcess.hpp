@@ -29,6 +29,9 @@ protected:
 
     /** maximum size of packet, if set all packets are at most this size **/
     int max_packet_size = -1;
+
+    /** indicate whether this is a brodacast process **/
+    bool isBroadcast = false;
 public:
     RlcProcess(MacId id);
     RlcProcess(MacId id, int max_packet_size);
@@ -38,6 +41,7 @@ public:
     void receiveInjectionFromLower(L2Packet* packet, PacketPriority priority = PRIORITY_LINK_MANAGEMENT);
     L2Packet* getInjectedPacket();
     pair<L2Header*, L2Packet::Payload*> getData(unsigned int num_bits);
+    pair<L2Header*, L2Packet::Payload*> getBroadcastData(unsigned int num_bits);
     pair<L2Header*, L2Packet::Payload*> getEmptyData();
     bool hasDataToSend();
     L3Packet* getReassembledPacket();

@@ -14,11 +14,12 @@ using namespace TUHH_INTAIRNET_MCSOTDMA;
 using namespace TUHH_INTAIRNET_RLC;
 
 RlcProcess::RlcProcess(MacId id): dest(id) {
-
+    this->isBroadcast = id == SYMBOLIC_LINK_ID_BROADCAST;
 }
 
 RlcProcess::RlcProcess(MacId id, int max_packet_size): dest(id) {
     this->max_packet_size = max_packet_size;
+    this->isBroadcast = id == SYMBOLIC_LINK_ID_BROADCAST;
 }
 
 MacId RlcProcess::getMacId() {
@@ -40,7 +41,40 @@ pair<L2Header*, L2Packet::Payload*> RlcProcess::getEmptyData() {
     return {header, payload};
 }
 
+pair<L2Header*, L2Packet::Payload*> RlcProcess::getBroadcastData(unsigned int num_bits) {
+    L3Packet *next_L3_packet = packets_to_send.front();
+    unsigned int remaining_packet_size = next_L3_packet->size - next_L3_packet->offset;
+    auto header = new L2HeaderBroadcast();
+    header->is_pkt_start = (next_L3_packet->offset == 0);
+    header->dest_id = dest;
+
+    unsigned int remainig_payload_size = num_bits - header->getBits();
+    unsigned int size = 0;
+
+    if(remaining_packet_size > remainig_payload_size) {
+        size = (remainig_payload_size > max_packet_size) ? max_packet_size : remainig_payload_size;
+        auto payload = new InetPacketPayload();
+        payload->size = size;
+        payload->original = next_L3_packet->original;
+        payload->offset = next_L3_packet->offset;
+        next_L3_packet->offset += size;
+        return {header, payload};
+    }
+    size = (remaining_packet_size > max_packet_size) ? max_packet_size : remaining_packet_size;
+    bool is_full_pkt = size == remaining_packet_size;
+    auto payload = new InetPacketPayload();
+    payload->size = size;
+    payload->original = next_L3_packet->original;
+    payload->offset = next_L3_packet->offset;
+    header->is_pkt_end = is_full_pkt;
+    packets_to_send.pop_front();
+    return {header, payload};
+}
+
 pair<L2Header*, L2Packet::Payload*> RlcProcess::getData(unsigned int num_bits) {
+    if(dest == SYMBOLIC_LINK_ID_BROADCAST) {
+        return getBroadcastData(num_bits);
+    }
     L3Packet *next_L3_packet = packets_to_send.front();
     unsigned int remaining_packet_size = next_L3_packet->size - next_L3_packet->offset;
     auto header = new L2HeaderUnicast(L2Header::FrameType::unicast);
