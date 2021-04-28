@@ -34,7 +34,7 @@ public:
         data = process.getData(500);
         CPPUNIT_ASSERT_EQUAL(500,(int)(data.first->getBits() + data.second->getBits()) );
         data = process.getData(500);
-        CPPUNIT_ASSERT_EQUAL(195,(int)(data.first->getBits() + data.second->getBits()) );
+        CPPUNIT_ASSERT_EQUAL(231,(int)(data.first->getBits() + data.second->getBits()) );
 
         CPPUNIT_ASSERT_EQUAL(process.hasDataToSend(), false);
     }
@@ -65,7 +65,19 @@ public:
 
         CPPUNIT_ASSERT(process.getInjectedPacket() == nullptr);
         process.receiveInjectionFromLower(pkt);
-        CPPUNIT_ASSERT_EQUAL(process.getInjectedPacket(), pkt);
+        CPPUNIT_ASSERT_EQUAL(process.getInjectedPacket()->getBits(), pkt->getBits());
+
+    }
+
+    void testInjectionDelete() {
+        MacId dest(12);
+        RlcProcess process(dest);
+        L2Packet *pkt = new L2Packet();
+
+        CPPUNIT_ASSERT(process.getInjectedPacket() == nullptr);
+        process.receiveInjectionFromLower(pkt);
+        delete pkt;
+        CPPUNIT_ASSERT_EQUAL(process.getInjectedPacket()->getBits(), pkt->getBits());
 
     }
 
@@ -120,5 +132,6 @@ CPPUNIT_TEST_SUITE(RlcProcessTest);
         CPPUNIT_TEST(handleL3Packets);
         CPPUNIT_TEST(testInjection);
         CPPUNIT_TEST(testReassembly);
+        CPPUNIT_TEST(testInjectionDelete);
     CPPUNIT_TEST_SUITE_END();
 };

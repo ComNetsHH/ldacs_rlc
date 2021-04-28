@@ -27,12 +27,16 @@ MacId RlcProcess::getMacId() {
 
 pair<L2Header*, L2Packet::Payload*> RlcProcess::getEmptyData() {
     auto header = new L2HeaderUnicast(L2Header::FrameType::unicast);
+    auto bcHeader = new L2HeaderBroadcast();
     auto payload = new InetPacketPayload();
     header->is_pkt_end = true;
     header->is_pkt_start = true;
-    header->icao_dest_id = dest;
+    header->dest_id = dest;
     payload->size = 0;
     payload->offset = 0;
+    if(dest == SYMBOLIC_LINK_ID_BROADCAST) {
+        return {bcHeader, payload};
+    }
     return {header, payload};
 }
 
@@ -41,7 +45,7 @@ pair<L2Header*, L2Packet::Payload*> RlcProcess::getData(unsigned int num_bits) {
     unsigned int remaining_packet_size = next_L3_packet->size - next_L3_packet->offset;
     auto header = new L2HeaderUnicast(L2Header::FrameType::unicast);
     header->is_pkt_start = (next_L3_packet->offset == 0);
-    header->icao_dest_id = dest;
+    header->dest_id = dest;
 
     unsigned int remainig_payload_size = num_bits - header->getBits();
     unsigned int size = 0;
@@ -71,7 +75,8 @@ void RlcProcess::receiveFromUpper(L3Packet* data, PacketPriority priority) {
     packets_to_send.push_back(data);
 }
 void RlcProcess::receiveInjectionFromLower(L2Packet* packet, PacketPriority priority) {
-    injected_packets.push_back(packet);
+    auto p = new L2Packet(*packet);
+    injected_packets.push_back(p);
 }
 L2Packet* RlcProcess::getInjectedPacket() {
     if(injected_packets.empty()) {
