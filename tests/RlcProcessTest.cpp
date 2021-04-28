@@ -76,9 +76,9 @@ public:
 
         CPPUNIT_ASSERT(process.getInjectedPacket() == nullptr);
         process.receiveInjectionFromLower(pkt);
+        auto bits = pkt->getBits();
         delete pkt;
-        CPPUNIT_ASSERT_EQUAL(process.getInjectedPacket()->getBits(), pkt->getBits());
-
+        CPPUNIT_ASSERT_EQUAL(process.getInjectedPacket()->getBits(), bits);
     }
 
     void testReassembly() {
