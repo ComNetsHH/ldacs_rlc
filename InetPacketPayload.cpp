@@ -15,3 +15,9 @@ L2Packet::Payload* InetPacketPayload::copy() const {
 	copy->original = this->original;
 	return copy;
 };
+
+InetPacketPayload::~InetPacketPayload() {
+    if(original) {
+        delete original;
+    }
+}

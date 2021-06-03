@@ -22,6 +22,7 @@ public:
     unsigned int getBits() const override;
 
     Payload* copy() const override;
+    ~InetPacketPayload();
 };
 
 
