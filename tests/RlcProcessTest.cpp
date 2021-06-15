@@ -6,7 +6,7 @@
 #include <cppunit/TestFixture.h>
 #include <cppunit/extensions/HelperMacros.h>
 #include "../RlcProcess.hpp"
-#include "../InetPacketPayload.hpp"
+#include "InetPacketPayload.hpp"
 
 using namespace TUHH_INTAIRNET_MCSOTDMA;
 using namespace TUHH_INTAIRNET_RLC;

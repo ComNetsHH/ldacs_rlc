@@ -2,6 +2,7 @@
 cmake-build-debug/
 glue-lib
 glue-lib-headers
+avionic-rlc
 CMakeCache.txt
 CMakeFiles/
 Makefile
