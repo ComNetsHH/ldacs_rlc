@@ -55,7 +55,7 @@ pair<L2Header*, L2Packet::Payload*> RlcProcess::getBroadcastData(unsigned int nu
         size = (remainig_payload_size > max_packet_size) ? max_packet_size : remainig_payload_size;
         auto payload = new InetPacketPayload();
         payload->size = size;
-        payload->original = next_L3_packet->original;
+        payload->original = header->is_pkt_start ? next_L3_packet->original : nullptr;
         payload->offset = next_L3_packet->offset;
         next_L3_packet->offset += size;
         return {header, payload};
@@ -64,7 +64,7 @@ pair<L2Header*, L2Packet::Payload*> RlcProcess::getBroadcastData(unsigned int nu
     bool is_full_pkt = size == remaining_packet_size;
     auto payload = new InetPacketPayload();
     payload->size = size;
-    payload->original = next_L3_packet->original;
+    payload->original =header->is_pkt_start ? next_L3_packet->original : nullptr;
     payload->offset = next_L3_packet->offset;
     header->is_pkt_end = is_full_pkt;
     packets_to_send.pop_front();
@@ -88,7 +88,7 @@ pair<L2Header*, L2Packet::Payload*> RlcProcess::getData(unsigned int num_bits) {
         size = (remainig_payload_size > max_packet_size) ? max_packet_size : remainig_payload_size;
         auto payload = new InetPacketPayload();
         payload->size = size;
-        payload->original = next_L3_packet->original;
+        payload->original = header->is_pkt_start ? next_L3_packet->original : nullptr;
         payload->offset = next_L3_packet->offset;
         next_L3_packet->offset += size;
         return {header, payload};
@@ -97,7 +97,7 @@ pair<L2Header*, L2Packet::Payload*> RlcProcess::getData(unsigned int num_bits) {
     bool is_full_pkt = size == remaining_packet_size;
     auto payload = new InetPacketPayload();
     payload->size = size;
-    payload->original = next_L3_packet->original;
+    payload->original = header->is_pkt_start ? next_L3_packet->original : nullptr;
     payload->offset = next_L3_packet->offset;
     header->is_pkt_end = is_full_pkt;
     packets_to_send.pop_front();
