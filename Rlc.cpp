@@ -16,6 +16,9 @@ void Rlc::receiveFromLower(L2Packet* packet) {
     auto process = getProcess(src);
     if(process == nullptr) {
         process = new RlcProcess(src, max_packet_size);
+        if(debugCallback) {
+            process->registerDebugMessageCallback(debugCallback);
+        }
         processes.insert(make_pair(src, process));
     }
     auto headers = packet->getHeaders();
@@ -31,7 +34,10 @@ void Rlc::receiveFromLower(L2Packet* packet) {
     L3Packet * pkt = process->getReassembledPacket();
     auto nwLayer = getUpperLayer();
     while (nwLayer && pkt != nullptr) {
-        nwLayer->receiveFromLower(pkt);
+        debug("Rlc::passingToNWLayer" + to_string(pkt->size));
+        if(pkt->size > 0) {
+            nwLayer->receiveFromLower(pkt);
+        }
         emit("Rlc:packet_passed_up(bits)", (double) pkt->size);
         pkt = process->getReassembledPacket();
     }
@@ -39,10 +45,12 @@ void Rlc::receiveFromLower(L2Packet* packet) {
 
 void Rlc::receiveFromUpper(L3Packet *data, MacId dest, PacketPriority priority) {
     emit("Rlc:packet_received_from_upper(bits)", (double) data->size);
-    debug("Mac ID: " + to_string((int)dest.getId()));
     auto process = getProcess(dest);
     if(process == nullptr) {
         process = new RlcProcess(dest);
+        if(debugCallback) {
+            process->registerDebugMessageCallback(debugCallback);
+        }
         processes.insert(make_pair(dest, process));
     }
 
@@ -82,7 +90,6 @@ void Rlc::receiveInjectionFromLower(L2Packet *packet, PacketPriority priority) {
 
 L2Packet * Rlc::requestSegment(unsigned int num_bits, const MacId &mac_id) {
     emit("Rlc:packet_requested_from_lower(bits)", (double) num_bits);
-    debug("Mac ID__: " + to_string((int)mac_id.getId()));
     auto process = getProcess(mac_id);
 
     if(process == nullptr) {
@@ -97,18 +104,13 @@ L2Packet * Rlc::requestSegment(unsigned int num_bits, const MacId &mac_id) {
         packet = new L2Packet();
         L2HeaderBase* base_header = new L2HeaderBase(mac_id, 0, 0, 0, 0);
         packet->addMessage(base_header, nullptr);
-        debug("###" + to_string(base_header->getBits()));
     }
 
-    bool has_more_data = process->hasDataToSend(); //packet->getBits() < num_bits;
-    debug("#-#-#" + to_string(process->getMacId().getId()));
+    bool has_more_data = process->hasDataToSend();
     int counter = 0;
 
     while(has_more_data && counter < 100) {
         pair<L2Header*, L2Packet::Payload*> data = process->getData(num_bits - packet->getBits());
-        debug("Req_Size: " + to_string(num_bits - packet->getBits()));
-        debug("Rem_Size: " + to_string(packet->getBits()));
-        debug("MAC_ID" + to_string(process->getMacId().getId()));
         packet->addMessage(data.first, data.second);
 
         has_more_data = process->hasDataToSend();
@@ -121,12 +123,10 @@ L2Packet * Rlc::requestSegment(unsigned int num_bits, const MacId &mac_id) {
         emit("Rlc:packet_sent_down(bits)", (double) packet->getBits());
     }
 
-    debug(packet->print());
     if(packet->getHeaders().size() <= 1) {
         auto data = process->getEmptyData();
         packet->addMessage(data.first, data.second);
     }
-    debug(packet->print());
     return packet;
 }
 

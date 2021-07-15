@@ -142,7 +142,7 @@ L3Packet* RlcProcess::getReassembledPacket() {
             if(unicast_header->is_pkt_start && firstStartIndex < 0) {
                 firstStartIndex = idx;
             }
-            if(unicast_header->is_pkt_end && firstEndIndex < 0) {
+            if(unicast_header->is_pkt_end && firstEndIndex < 0 && firstStartIndex != -1) {
                 firstEndIndex = idx;
             }
         }else if(header->frame_type == L2Header::FrameType::broadcast) {
@@ -150,7 +150,7 @@ L3Packet* RlcProcess::getReassembledPacket() {
             if(broadcast_header->is_pkt_start && firstStartIndex < 0) {
                 firstStartIndex = idx;
             }
-            if(broadcast_header->is_pkt_end && firstEndIndex < 0) {
+            if(broadcast_header->is_pkt_end && firstEndIndex < 0 && firstStartIndex != -1) {
                 firstEndIndex = idx;
             }
         }

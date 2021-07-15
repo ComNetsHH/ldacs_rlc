@@ -8,6 +8,7 @@
 #include <deque>
 #include <utility>
 #include <IRlc.hpp>
+#include "IOmnetPluggable.hpp"
 #include "L2Packet.hpp"
 #include "L3Packet.hpp"
 
@@ -19,7 +20,7 @@ typedef pair<L2Header *, L2Packet::Payload *> PacketFragment;
 
 namespace TUHH_INTAIRNET_RLC {
 
-class RlcProcess {
+class RlcProcess: public IOmnetPluggable {
 protected:
     MacId dest = SYMBOLIC_ID_UNSET;
     deque<L3Packet *> packets_to_send;
