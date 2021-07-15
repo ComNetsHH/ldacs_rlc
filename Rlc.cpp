@@ -30,10 +30,10 @@ void Rlc::receiveFromLower(L2Packet* packet) {
 
     L3Packet * pkt = process->getReassembledPacket();
     auto nwLayer = getUpperLayer();
-
-    if(pkt && nwLayer) {
+    while (nwLayer && pkt != nullptr) {
         nwLayer->receiveFromLower(pkt);
         emit("Rlc:packet_passed_up(bits)", (double) pkt->size);
+        pkt = process->getReassembledPacket();
     }
 }
 

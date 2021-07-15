@@ -127,11 +127,42 @@ public:
     }
 
 
+    void testMultipleReassembly() {
+        MacId dest(-1);
+        RlcProcess process(dest, 100);
+
+
+        for (int i = 0; i < 10; i++) {
+            L2HeaderUnicast *header = new L2HeaderUnicast(MacId(-1), false, SEQNO_UNSET, SEQNO_UNSET, 0);
+            header->is_pkt_start = true;
+            header->is_pkt_end = true;
+            InetPacketPayload *payload = new InetPacketPayload();
+            payload->size = 100;
+            payload->original = nullptr;
+            PacketFragment frag = make_pair(header, payload);
+            process.receiveFromLower(frag);
+        }
+
+
+        int counter = 0;
+
+        auto pkt = process.getReassembledPacket();
+
+        while(pkt != nullptr) {
+            counter++;
+            pkt = process.getReassembledPacket();
+        }
+
+        CPPUNIT_ASSERT_EQUAL(10, counter);
+    }
+
+
 CPPUNIT_TEST_SUITE(RlcProcessTest);
         CPPUNIT_TEST(macId);
         CPPUNIT_TEST(handleL3Packets);
         CPPUNIT_TEST(testInjection);
         CPPUNIT_TEST(testReassembly);
+        CPPUNIT_TEST(testMultipleReassembly);
         CPPUNIT_TEST(testInjectionDelete);
     CPPUNIT_TEST_SUITE_END();
 };
