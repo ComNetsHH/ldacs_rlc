@@ -171,9 +171,9 @@ public:
         CPPUNIT_ASSERT_EQUAL(255, bits); // Base Header + 100bits payload
 
 
-        L3Packet *ipPakt = new L3Packet();
-        ipPakt->size = 1000;
-        process.receiveFromUpper(ipPakt);
+        L3Packet *ipPkt = new L3Packet();
+        ipPkt->size = 1000;
+        process.receiveFromUpper(ipPkt);
 
         bits = process.getQueuedBits();
         CPPUNIT_ASSERT_EQUAL(1255, bits); // Base Header + 100bits payload + 1000 bist of L3Packet

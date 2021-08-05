@@ -40,8 +40,40 @@ public:
         CPPUNIT_ASSERT(process != nullptr);
     }
 
+    void testInjectedPacketConcatenation() {
+        MacId macId = MacId(SYMBOLIC_LINK_ID_BROADCAST);
+        Rlc rlc(-1);
+        L3Packet * pkt1 = new L3Packet();
+        pkt1->size = 100;
+
+        L3Packet * pkt2 = new L3Packet();
+        pkt2->size = 100;
+
+        L2Packet * injection = new L2Packet();
+        L2HeaderBase *baseHeader = new L2HeaderBase(macId, 0, 0, 0, 0);
+        L2HeaderBeacon *beaconHeader = new L2HeaderBeacon();
+        InetPacketPayload *payload = new InetPacketPayload();
+        payload->size = 100;
+        injection->addMessage(baseHeader, nullptr);
+        injection->addMessage(beaconHeader, payload);
+
+        //auto process = rlc.getProcess(macId);
+        rlc.receiveFromUpper(pkt1, macId);
+        rlc.receiveFromUpper(pkt2, macId);
+        rlc.receiveInjectionFromLower(injection);
+
+        auto segment = rlc.requestSegment(10000, macId);
+
+        // Print packet structure
+        // [ B,N | H,P | BC,P | BC,P ]
+        cout << segment->print();
+
+        CPPUNIT_ASSERT(segment->getHeaders().size() == 4);
+    }
+
 
 CPPUNIT_TEST_SUITE(RlcTest);
         CPPUNIT_TEST(testProcessCreation);
+        CPPUNIT_TEST(testInjectedPacketConcatenation);
     CPPUNIT_TEST_SUITE_END();
 };
