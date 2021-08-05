@@ -11,7 +11,7 @@ using namespace std;
 using namespace TUHH_INTAIRNET_RLC;
 
 void Rlc::receiveFromLower(L2Packet* packet) {
-    emit("Rlc:packet_received_from_lower(bits)", (double) packet->getBits());
+    emit("rlc_bits_received_from_lower", (double) packet->getBits());
     MacId src = packet->getOrigin();
     auto process = getProcess(src);
     if(process == nullptr) {
@@ -38,13 +38,13 @@ void Rlc::receiveFromLower(L2Packet* packet) {
         if(pkt->size > 0) {
             nwLayer->receiveFromLower(pkt);
         }
-        emit("Rlc:packet_passed_up(bits)", (double) pkt->size);
+        emit("rlc_packet_sent_up", (double) pkt->size);
         pkt = process->getReassembledPacket();
     }
 }
 
 void Rlc::receiveFromUpper(L3Packet *data, MacId dest, PacketPriority priority) {
-    emit("Rlc:packet_received_from_upper(bits)", (double) data->size);
+    emit("rlc_packet_received_from_upper", (double) data->size);
     auto process = getProcess(dest);
     if(process == nullptr) {
         process = new RlcProcess(dest);
@@ -89,7 +89,7 @@ void Rlc::receiveInjectionFromLower(L2Packet *packet, PacketPriority priority) {
 }
 
 L2Packet * Rlc::requestSegment(unsigned int num_bits, const MacId &mac_id) {
-    emit("Rlc:packet_requested_from_lower(bits)", (double) num_bits);
+    emit("rlc_bits_requested_from_lower", (double) num_bits);
     auto process = getProcess(mac_id);
 
     if(process == nullptr) {
@@ -120,7 +120,7 @@ L2Packet * Rlc::requestSegment(unsigned int num_bits, const MacId &mac_id) {
 
         // TODO: add unicast data to broadcast if there is space
         counter++;
-        emit("Rlc:packet_sent_down(bits)", (double) packet->getBits());
+        emit("rlc_packet_sent_down", (double) packet->getBits());
     }
 
     if(packet->getHeaders().size() <= 1) {
