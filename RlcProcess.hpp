@@ -44,6 +44,7 @@ public:
     pair<L2Header*, L2Packet::Payload*> getData(unsigned int num_bits);
     pair<L2Header*, L2Packet::Payload*> getBroadcastData(unsigned int num_bits);
     pair<L2Header*, L2Packet::Payload*> getEmptyData();
+    int getQueuedBits();
     bool hasDataToSend();
     L3Packet* getReassembledPacket();
 };

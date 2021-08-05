@@ -58,7 +58,7 @@ void Rlc::receiveFromUpper(L3Packet *data, MacId dest, PacketPriority priority) 
 
     IArq *arq = getLowerLayer();
     if(arq) {
-        arq->notifyOutgoing(data->size, dest);
+        arq->notifyOutgoing(process->getQueuedBits(), dest);
     }
 }
 
@@ -84,7 +84,7 @@ void Rlc::receiveInjectionFromLower(L2Packet *packet, PacketPriority priority) {
 
     IArq *arq = getLowerLayer();
     if(arq) {
-        arq->notifyOutgoing(packet->getBits(), dest);
+        arq->notifyOutgoing(process->getQueuedBits(), dest);
     }
 }
 

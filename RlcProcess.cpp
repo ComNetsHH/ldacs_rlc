@@ -41,6 +41,18 @@ pair<L2Header*, L2Packet::Payload*> RlcProcess::getEmptyData() {
     return {header, payload};
 }
 
+int RlcProcess::getQueuedBits() {
+    int total = 0;
+
+    for(auto it = packets_to_send.begin(); it != packets_to_send.end(); it++) {
+        total += (*it)->size;
+    }
+    for(auto it = injected_packets.begin(); it != injected_packets.end(); it++) {
+        total += (*it)->getBits();
+    }
+    return total;
+}
+
 pair<L2Header*, L2Packet::Payload*> RlcProcess::getBroadcastData(unsigned int num_bits) {
     L3Packet *next_L3_packet = packets_to_send.front();
     unsigned int remaining_packet_size = next_L3_packet->size - next_L3_packet->offset;
