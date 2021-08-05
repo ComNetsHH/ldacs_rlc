@@ -156,6 +156,29 @@ public:
         CPPUNIT_ASSERT_EQUAL(10, counter);
     }
 
+    void testQueuedBits() {
+        MacId dest(12);
+        RlcProcess process(dest);
+        L2Packet *pkt = new L2Packet();
+        L2HeaderBase *header = new L2HeaderBase();
+        InetPacketPayload *payload = new InetPacketPayload();
+        payload->size = 100;
+        pkt->addMessage(header, payload);
+        int bits = process.getQueuedBits();
+        CPPUNIT_ASSERT_EQUAL(0, bits);
+        process.receiveInjectionFromLower(pkt);
+        bits = process.getQueuedBits();
+        CPPUNIT_ASSERT_EQUAL(255, bits); // Base Header + 100bits payload
+
+
+        L3Packet *ipPakt = new L3Packet();
+        ipPakt->size = 1000;
+        process.receiveFromUpper(ipPakt);
+
+        bits = process.getQueuedBits();
+        CPPUNIT_ASSERT_EQUAL(1255, bits); // Base Header + 100bits payload + 1000 bist of L3Packet
+    }
+
 
 CPPUNIT_TEST_SUITE(RlcProcessTest);
         CPPUNIT_TEST(macId);
@@ -164,5 +187,6 @@ CPPUNIT_TEST_SUITE(RlcProcessTest);
         CPPUNIT_TEST(testReassembly);
         CPPUNIT_TEST(testMultipleReassembly);
         CPPUNIT_TEST(testInjectionDelete);
+        CPPUNIT_TEST(testQueuedBits);
     CPPUNIT_TEST_SUITE_END();
 };
