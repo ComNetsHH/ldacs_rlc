@@ -62,18 +62,48 @@ public:
         rlc.receiveFromUpper(pkt2, macId);
         rlc.receiveInjectionFromLower(injection);
 
-        auto segment = rlc.requestSegment(10000, macId);
+        auto segment = rlc.requestSegment(1900, macId);
+
+        //cout << segment->getBits();
 
         // Print packet structure
         // [ B,N | H,P | BC,P | BC,P ]
-        cout << segment->print();
+        //cout << segment->print();
 
-        CPPUNIT_ASSERT(segment->getHeaders().size() == 4);
+        CPPUNIT_ASSERT(segment->getHeaders().size() == 3);
     }
+
+    void testCorrectPacketSize() {
+        MacId macId = MacId(3);
+        Rlc rlc(3);
+
+        // Load RLC with sufficient L3Packets
+        for(int i = 0; i < 120; i++) {
+            L3Packet * pkt = new L3Packet();
+            pkt->size = 232;
+            rlc.receiveFromUpper(pkt, macId);
+        }
+
+
+
+        // Request segment of odd size
+        auto segment = rlc.requestSegment(1568, macId);
+
+        while (segment->getBits() > 1000) {
+            segment = rlc.requestSegment(1568, macId);
+            //cout << segment->getBits();
+            //cout << segment->print();
+            //cout << endl;
+            CPPUNIT_ASSERT(segment->getBits() <= 1568);
+        }
+    }
+
 
 
 CPPUNIT_TEST_SUITE(RlcTest);
         CPPUNIT_TEST(testProcessCreation);
         CPPUNIT_TEST(testInjectedPacketConcatenation);
+        CPPUNIT_TEST(testCorrectPacketSize);
+
     CPPUNIT_TEST_SUITE_END();
 };

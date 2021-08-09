@@ -107,6 +107,10 @@ L2Packet * Rlc::requestSegment(unsigned int num_bits, const MacId &mac_id) {
     }
 
     bool has_more_data = process->hasDataToSend();
+    int header_size = mac_id != SYMBOLIC_LINK_ID_BROADCAST?
+            (new L2HeaderUnicast(L2Header::FrameType::unicast))->getBits() :
+                      (new L2HeaderBroadcast())->getBits();
+
     int counter = 0;
 
     while(has_more_data && counter < 100) {
@@ -114,7 +118,9 @@ L2Packet * Rlc::requestSegment(unsigned int num_bits, const MacId &mac_id) {
         packet->addMessage(data.first, data.second);
 
         has_more_data = process->hasDataToSend();
-        if(packet->getBits() >= num_bits) {
+
+        // If the remaining space is too small for an additional header, we're done
+        if(packet->getBits() + header_size >= num_bits) {
             has_more_data = false;
         }
 
