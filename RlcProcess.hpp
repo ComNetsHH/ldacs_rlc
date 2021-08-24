@@ -47,6 +47,8 @@ public:
     int getQueuedBits();
     bool hasDataToSend();
     L3Packet* getReassembledPacket();
+
+    ~RlcProcess();
 };
 
 }

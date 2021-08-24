@@ -198,3 +198,21 @@ L3Packet* RlcProcess::getReassembledPacket() {
     packets_received.erase(packets_received.begin() + firstStartIndex, packets_received.begin() + firstEndIndex+1);
     return pkt;
 }
+
+RlcProcess::~RlcProcess() {
+    //cout << "RlcProcess treminated with ";
+    //cout << " num2send " << packets_to_send.size();
+    //cout << " numInjected " << injected_packets.size();
+    //cout << " num2reassemble " << packets_received.size();
+    //cout << endl;
+    for(int i= 0; i< packets_to_send.size(); i++) {
+        auto original = packets_to_send[i]->original;
+        auto offset = packets_to_send[i]->offset;
+        if(original && offset == 0) {
+            cout << "PKT " << offset << endl;
+            //delete original;
+            packets_to_send[i]->original = nullptr;
+        }
+        //delete packets_to_send[i];
+    }
+}

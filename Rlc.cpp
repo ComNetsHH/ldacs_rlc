@@ -148,9 +148,15 @@ void Rlc::onEvent(double time) {
 
 }
 
-
 Rlc::Rlc(int min_packet_size) {
     this->max_packet_size = min_packet_size;
+}
+
+Rlc::~Rlc() {
+    for (auto it = processes.begin(); it != processes.end(); ++it)
+    {
+        delete it->second;
+    }
 }
 
 

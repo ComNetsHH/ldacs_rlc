@@ -34,6 +34,8 @@ public:
     bool isThereMoreData(const MacId& mac_id) const;
 
     void onEvent(double time);
+
+    ~Rlc();
 };
 
 }
