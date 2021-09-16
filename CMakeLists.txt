@@ -4,7 +4,7 @@ project(tuhh_intairnet_rlc)
 set(CMAKE_CXX_STANDARD 14)
 
 # Remove if not needed
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -I/usr/include -I/usr/local/include/ -L/usr/local/Cellar/cppunit/1.15.1/lib")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -I/usr/include -I/usr/local/include/ -L/usr/local/Cellar/cppunit/1.15.1/lib -L/usr/local/lib")
 
 set(TARGET_SRC Rlc.hpp Rlc.cpp RlcProcess.hpp RlcProcess.cpp)
 set(TARGET_TEST_SRC tests/unittests.cpp tests/RlcProcessTest.cpp)
