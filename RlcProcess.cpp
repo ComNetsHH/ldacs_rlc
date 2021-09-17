@@ -209,7 +209,6 @@ RlcProcess::~RlcProcess() {
         auto original = packets_to_send[i]->original;
         auto offset = packets_to_send[i]->offset;
         if(original && offset == 0) {
-            cout << "PKT " << offset << endl;
             //delete original;
             packets_to_send[i]->original = nullptr;
         }
