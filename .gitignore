@@ -1,5 +1,6 @@
 .idea/
 cmake-build-debug/
+cmake-build-release/
 glue-lib
 glue-lib-headers
 avionic-rlc
