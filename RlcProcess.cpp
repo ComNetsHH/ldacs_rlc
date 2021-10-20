@@ -53,6 +53,15 @@ int RlcProcess::getQueuedBits() {
     return total;
 }
 
+int RlcProcess::getNumInjectedPackets() {
+    return injected_packets.size();
+}
+
+
+int RlcProcess::getNumReassembly() {
+    return packets_received.size();
+}
+
 pair<L2Header*, L2Packet::Payload*> RlcProcess::getBroadcastData(unsigned int num_bits) {
     L3Packet *next_L3_packet = packets_to_send.front();
     unsigned int remaining_packet_size = next_L3_packet->size - next_L3_packet->offset;
@@ -157,6 +166,8 @@ L3Packet* RlcProcess::getReassembledPacket() {
             if(unicast_header->is_pkt_end && firstEndIndex < 0 && firstStartIndex != -1) {
                 firstEndIndex = idx;
             }
+
+            cout << "StartIdx= " << firstStartIndex << ", endIdx= " << firstEndIndex << endl;
         }else if(header->frame_type == L2Header::FrameType::broadcast) {
             L2HeaderBroadcast *broadcast_header= dynamic_cast<L2HeaderBroadcast*>(header);
             if(broadcast_header->is_pkt_start && firstStartIndex < 0) {
@@ -193,6 +204,10 @@ L3Packet* RlcProcess::getReassembledPacket() {
 
     if(payload != nullptr) {
         pkt->original = payload->original;
+
+        if(payload->original == nullptr) {
+            cout << "DANGER: " << pkt->size << endl;
+        }
     }
 
     packets_received.erase(packets_received.begin() + firstStartIndex, packets_received.begin() + firstEndIndex+1);
@@ -209,9 +224,9 @@ RlcProcess::~RlcProcess() {
         auto original = packets_to_send[i]->original;
         auto offset = packets_to_send[i]->offset;
         if(original && offset == 0) {
-            cout << "PKT " << offset << endl;
+            // cout << "PKT " << offset << endl;
             //delete original;
-            packets_to_send[i]->original = nullptr;
+            //packets_to_send[i]->original = nullptr;
         }
         //delete packets_to_send[i];
     }

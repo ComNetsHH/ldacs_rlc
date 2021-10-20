@@ -18,9 +18,11 @@ void Rlc::receiveFromLower(L2Packet* packet) {
         process = new RlcProcess(src, max_packet_size);
         if(debugCallback) {
             process->registerDebugMessageCallback(debugCallback);
+            process->registerEmitEventCallback(emitCallback);
         }
         processes.insert(make_pair(src, process));
     }
+
     auto headers = packet->getHeaders();
     auto payloads = packet->getPayloads();
 
@@ -32,15 +34,17 @@ void Rlc::receiveFromLower(L2Packet* packet) {
     }
 
     L3Packet * pkt = process->getReassembledPacket();
+
     auto nwLayer = getUpperLayer();
     while (nwLayer && pkt != nullptr) {
         debug("Rlc::passingToNWLayer" + to_string(pkt->size));
         if(pkt->size > 0) {
             nwLayer->receiveFromLower(pkt);
+            emit("rlc_packet_sent_up", (double) pkt->size);
         }
-        emit("rlc_packet_sent_up", (double) pkt->size);
         pkt = process->getReassembledPacket();
     }
+    emit("rlc_awaiting_reassembly", (double) process->getNumReassembly());
 }
 
 void Rlc::receiveFromUpper(L3Packet *data, MacId dest, PacketPriority priority) {
@@ -50,10 +54,12 @@ void Rlc::receiveFromUpper(L3Packet *data, MacId dest, PacketPriority priority) 
         process = new RlcProcess(dest);
         if(debugCallback) {
             process->registerDebugMessageCallback(debugCallback);
+            process->registerEmitEventCallback(emitCallback);
         }
         processes.insert(make_pair(dest, process));
     }
 
+    emit("rlc_packets_injected", (double)process->getNumInjectedPackets());
     process->receiveFromUpper(data, priority);
 
     IArq *arq = getLowerLayer();
