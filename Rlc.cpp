@@ -27,7 +27,7 @@ void Rlc::receiveFromLower(L2Packet* packet) {
     auto payloads = packet->getPayloads();
 
     for(int i = 0; i< headers.size(); i++) {
-        if(headers[i] != nullptr && payloads[i] != nullptr) {
+        if(headers[i]->frame_type == L2Header::FrameType::unicast || headers[i]->frame_type == L2Header::FrameType::broadcast) {
             PacketFragment frag = make_pair(headers[i], payloads[i]);
             process->receiveFromLower(frag);
         }
@@ -78,7 +78,7 @@ RlcProcess* Rlc::getProcess(MacId mac_id) const {
 }
 
 void Rlc::receiveInjectionFromLower(L2Packet *packet, PacketPriority priority) {
-    emit("Rlc:packet_injected_from_lower(bits)", (double) packet->getBits());
+    //emit("Rlc:packet_injected_from_lower(bits)", (double) packet->getBits());
     MacId dest = packet->getDestination();
     auto process = getProcess(dest);
     if(process == nullptr) {

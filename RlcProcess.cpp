@@ -166,8 +166,6 @@ L3Packet* RlcProcess::getReassembledPacket() {
             if(unicast_header->is_pkt_end && firstEndIndex < 0 && firstStartIndex != -1) {
                 firstEndIndex = idx;
             }
-
-            cout << "StartIdx= " << firstStartIndex << ", endIdx= " << firstEndIndex << endl;
         }else if(header->frame_type == L2Header::FrameType::broadcast) {
             L2HeaderBroadcast *broadcast_header= dynamic_cast<L2HeaderBroadcast*>(header);
             if(broadcast_header->is_pkt_start && firstStartIndex < 0) {
@@ -205,8 +203,8 @@ L3Packet* RlcProcess::getReassembledPacket() {
     if(payload != nullptr) {
         pkt->original = payload->original;
 
-        if(payload->original == nullptr) {
-            cout << "DANGER: " << pkt->size << endl;
+        if(payload->original == nullptr && pkt->size > 0) {
+            cout << "RlcProcess(" << (int)(dest.getId()) << "): Received Packet without original, Size: " << pkt->size << endl;
         }
     }
 
