@@ -154,6 +154,14 @@ void Rlc::onEvent(double time) {
 
 }
 
+unsigned int Rlc::getQueuedDataSize(MacId dest) {
+    auto process = getProcess(dest);
+    if(!process) {
+        return 0;
+    }
+    return process->getQueuedBits();
+}
+
 Rlc::Rlc(int min_packet_size) {
     this->max_packet_size = min_packet_size;
 }
