@@ -72,7 +72,7 @@ RlcProcess* Rlc::getProcess(MacId mac_id) const {
 }
 
 void Rlc::receiveInjectionFromLower(L2Packet *packet, PacketPriority priority) {
-    emit("Rlc:packet_injected_from_lower(bits)", (double) packet->getBits());
+    //emit("Rlc:packet_injected_from_lower(bits)", (double) packet->getBits());
     MacId dest = packet->getDestination();
     auto process = getProcess(dest);
     if(process == nullptr) {
