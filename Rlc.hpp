@@ -34,6 +34,7 @@ public:
     bool isThereMoreData(const MacId& mac_id) const;
 
     void onEvent(double time);
+    unsigned int getQueuedDataSize(MacId dest) override;
 
     ~Rlc();
 };

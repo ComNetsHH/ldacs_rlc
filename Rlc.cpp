@@ -18,29 +18,33 @@ void Rlc::receiveFromLower(L2Packet* packet) {
         process = new RlcProcess(src, max_packet_size);
         if(debugCallback) {
             process->registerDebugMessageCallback(debugCallback);
+            process->registerEmitEventCallback(emitCallback);
         }
         processes.insert(make_pair(src, process));
     }
+
     auto headers = packet->getHeaders();
     auto payloads = packet->getPayloads();
 
     for(int i = 0; i< headers.size(); i++) {
-        if(headers[i] != nullptr && payloads[i] != nullptr) {
+        if(headers[i]->frame_type == L2Header::FrameType::unicast || headers[i]->frame_type == L2Header::FrameType::broadcast) {
             PacketFragment frag = make_pair(headers[i], payloads[i]);
             process->receiveFromLower(frag);
         }
     }
 
     L3Packet * pkt = process->getReassembledPacket();
+
     auto nwLayer = getUpperLayer();
     while (nwLayer && pkt != nullptr) {
         debug("Rlc::passingToNWLayer" + to_string(pkt->size));
         if(pkt->size > 0) {
             nwLayer->receiveFromLower(pkt);
+            emit("rlc_packet_sent_up", (double) pkt->size);
         }
-        emit("rlc_packet_sent_up", (double) pkt->size);
         pkt = process->getReassembledPacket();
     }
+    emit("rlc_awaiting_reassembly", (double) process->getNumReassembly());
 }
 
 void Rlc::receiveFromUpper(L3Packet *data, MacId dest, PacketPriority priority) {
@@ -50,10 +54,12 @@ void Rlc::receiveFromUpper(L3Packet *data, MacId dest, PacketPriority priority) 
         process = new RlcProcess(dest);
         if(debugCallback) {
             process->registerDebugMessageCallback(debugCallback);
+            process->registerEmitEventCallback(emitCallback);
         }
         processes.insert(make_pair(dest, process));
     }
 
+    emit("rlc_packets_injected", (double)process->getNumInjectedPackets());
     process->receiveFromUpper(data, priority);
 
     IArq *arq = getLowerLayer();
@@ -146,6 +152,14 @@ bool Rlc::isThereMoreData(const MacId& mac_id) const{
 
 void Rlc::onEvent(double time) {
 
+}
+
+unsigned int Rlc::getQueuedDataSize(MacId dest) {
+    auto process = getProcess(dest);
+    if(!process) {
+        return 0;
+    }
+    return process->getQueuedBits();
 }
 
 Rlc::Rlc(int min_packet_size) {
