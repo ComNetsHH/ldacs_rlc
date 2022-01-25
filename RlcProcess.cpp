@@ -66,8 +66,7 @@ pair<L2Header*, L2Packet::Payload*> RlcProcess::getBroadcastData(unsigned int nu
     L3Packet *next_L3_packet = packets_to_send.front();
     unsigned int remaining_packet_size = next_L3_packet->size - next_L3_packet->offset;
     auto header = new L2HeaderBroadcast();
-    header->is_pkt_start = (next_L3_packet->offset == 0);
-    header->dest_id = dest;
+    header->is_pkt_start = (next_L3_packet->offset == 0);    
 
     unsigned int remainig_payload_size = num_bits - header->getBits();
     unsigned int size = 0;
