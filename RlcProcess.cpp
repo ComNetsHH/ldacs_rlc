@@ -207,16 +207,20 @@ L3Packet* RlcProcess::getReassembledPacket() {
         }
     }
 
+    for (auto it = packets_received.begin() + firstStartIndex; it != packets_received.begin() + firstEndIndex+1; it++) {
+        delete it->first;
+        delete it->second;
+    }
     packets_received.erase(packets_received.begin() + firstStartIndex, packets_received.begin() + firstEndIndex+1);
     return pkt;
 }
 
 RlcProcess::~RlcProcess() {
-    //cout << "RlcProcess treminated with ";
-    //cout << " num2send " << packets_to_send.size();
-    //cout << " numInjected " << injected_packets.size();
-    //cout << " num2reassemble " << packets_received.size();
-    //cout << endl;
+    // cout << "RlcProcess treminated with ";
+    // cout << " num2send " << packets_to_send.size();
+    // cout << " numInjected " << injected_packets.size();
+    // cout << " num2reassemble " << packets_received.size();
+    // cout << endl;
     for(int i= 0; i< packets_to_send.size(); i++) {
         auto original = packets_to_send[i]->original;
         auto offset = packets_to_send[i]->offset;
@@ -224,6 +228,8 @@ RlcProcess::~RlcProcess() {
             //delete original;
             //packets_to_send[i]->original = nullptr;
         }
-        //delete packets_to_send[i];
+        delete packets_to_send[i];
     }
+
+    packets_received.erase(packets_received.begin(), packets_received.end());
 }

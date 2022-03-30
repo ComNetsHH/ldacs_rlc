@@ -28,10 +28,12 @@ void Rlc::receiveFromLower(L2Packet* packet) {
 
     for(int i = 0; i< headers.size(); i++) {
         if(headers[i]->frame_type == L2Header::FrameType::unicast || headers[i]->frame_type == L2Header::FrameType::broadcast) {
-            PacketFragment frag = make_pair(headers[i], payloads[i]);
+            PacketFragment frag = make_pair(headers[i]->copy(), payloads[i] != nullptr? payloads[i]->copy(): nullptr);
             process->receiveFromLower(frag);
         }
     }
+
+    delete packet;
 
     L3Packet * pkt = process->getReassembledPacket();
 
@@ -39,8 +41,10 @@ void Rlc::receiveFromLower(L2Packet* packet) {
     while (nwLayer && pkt != nullptr) {
         debug("Rlc::passingToNWLayer" + to_string(pkt->size));
         if(pkt->size > 0) {
-            nwLayer->receiveFromLower(pkt);
             emit("rlc_packet_sent_up", (double) pkt->size);
+            nwLayer->receiveFromLower(pkt);
+        } else {
+            delete pkt;
         }
         pkt = process->getReassembledPacket();
     }
@@ -113,9 +117,11 @@ L2Packet * Rlc::requestSegment(unsigned int num_bits, const MacId &mac_id) {
     }
 
     bool has_more_data = process->hasDataToSend();
+    int unicast_header_size = 82;
+    int broadcast_header_size = 25;
     int header_size = mac_id != SYMBOLIC_LINK_ID_BROADCAST?
-            (new L2HeaderUnicast(L2Header::FrameType::unicast))->getBits() :
-                      (new L2HeaderBroadcast())->getBits();
+            unicast_header_size :
+                      broadcast_header_size;
 
     int counter = 0;
 
