@@ -24,6 +24,8 @@ protected:
     /** maximum size of packet, if set all packets are at most this size **/
     int max_packet_size = -1;
 
+    int getTotalBitsToSent();
+
 public:
     Rlc(int min_packet_size);
     RlcProcess* getProcess(MacId mac_id) const;
