@@ -71,7 +71,8 @@ void Rlc::receiveFromUpper(L3Packet *data, MacId dest, PacketPriority priority) 
         arq->notifyOutgoing(process->getQueuedBits(), dest);
     }
 
-    emit("rlc_bits_to_send", (double)(getTotalBitsToSent()));
+    emit("rlc_bits_to_send", (double)(getTotalBitsToSend()));
+    emit("rlc_packets_to_send", (double)(getTotalPacketsToSend()));
 }
 
 RlcProcess* Rlc::getProcess(MacId mac_id) const {
@@ -141,7 +142,8 @@ L2Packet * Rlc::requestSegment(unsigned int num_bits, const MacId &mac_id) {
         // TODO: add unicast data to broadcast if there is space
         counter++;
         emit("rlc_packet_sent_down", (double) packet->getBits());
-        emit("rlc_bits_to_send", (double)(getTotalBitsToSent()));
+        emit("rlc_bits_to_send", (double)(getTotalBitsToSend()));
+        emit("rlc_packets_to_send", (double)(getTotalPacketsToSend()));
     }
 
     if(packet->getHeaders().size() <= 1) {
@@ -171,13 +173,23 @@ unsigned int Rlc::getQueuedDataSize(MacId dest) {
     return process->getQueuedBits();
 }
 
-int Rlc::getTotalBitsToSent() {
+int Rlc::getTotalBitsToSend() {
     int total = 0;
     for (auto const& entry : processes)
     {
         total += entry.second->getQueuedBits();
     }
     return total;
+}
+
+int Rlc::getTotalPacketsToSend() {
+    int total = 0;
+    for (auto const& entry : processes)
+    {
+        total += entry.second->getQueuedPackets();
+    }
+    return total;
+
 }
 
 Rlc::Rlc(int min_packet_size) {

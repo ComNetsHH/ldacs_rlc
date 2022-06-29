@@ -53,6 +53,10 @@ int RlcProcess::getQueuedBits() {
     return total;
 }
 
+int RlcProcess::getQueuedPackets() {
+    return packets_to_send.size();
+}
+
 int RlcProcess::getNumInjectedPackets() {
     return injected_packets.size();
 }
