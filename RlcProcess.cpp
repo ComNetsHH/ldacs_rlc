@@ -27,8 +27,8 @@ MacId RlcProcess::getMacId() {
 }
 
 pair<L2Header*, L2Packet::Payload*> RlcProcess::getEmptyData() {
-    auto header = new L2HeaderUnicast(L2Header::FrameType::unicast);
-    auto bcHeader = new L2HeaderBroadcast();
+    auto header = new L2HeaderPP();
+    auto bcHeader = new L2HeaderSH();
     auto payload = new InetPacketPayload();
     header->is_pkt_end = true;
     header->is_pkt_start = true;
@@ -69,7 +69,7 @@ int RlcProcess::getNumReassembly() {
 pair<L2Header*, L2Packet::Payload*> RlcProcess::getBroadcastData(unsigned int num_bits) {
     L3Packet *next_L3_packet = packets_to_send.front();
     unsigned int remaining_packet_size = next_L3_packet->size - next_L3_packet->offset;
-    auto header = new L2HeaderBroadcast();
+    auto header = new L2HeaderSH();
     header->is_pkt_start = (next_L3_packet->offset == 0);    
 
     unsigned int remainig_payload_size = num_bits - header->getBits();
@@ -101,7 +101,7 @@ pair<L2Header*, L2Packet::Payload*> RlcProcess::getData(unsigned int num_bits) {
     }
     L3Packet *next_L3_packet = packets_to_send.front();
     unsigned int remaining_packet_size = next_L3_packet->size - next_L3_packet->offset;
-    auto header = new L2HeaderUnicast(L2Header::FrameType::unicast);
+    auto header = new L2HeaderPP();
     header->is_pkt_start = (next_L3_packet->offset == 0);
     header->dest_id = dest;
 
@@ -162,7 +162,7 @@ L3Packet* RlcProcess::getReassembledPacket() {
     for(auto it = packets_received.begin(); it != packets_received.end(); it++) {
         auto header = it->first;
         if(header->frame_type == L2Header::FrameType::unicast) {
-            L2HeaderUnicast *unicast_header= dynamic_cast<L2HeaderUnicast*>(header);
+            L2HeaderPP *unicast_header= dynamic_cast<L2HeaderPP*>(header);
             if(unicast_header->is_pkt_start && firstStartIndex < 0) {
                 firstStartIndex = idx;
             }
@@ -170,7 +170,7 @@ L3Packet* RlcProcess::getReassembledPacket() {
                 firstEndIndex = idx;
             }
         }else if(header->frame_type == L2Header::FrameType::broadcast) {
-            L2HeaderBroadcast *broadcast_header= dynamic_cast<L2HeaderBroadcast*>(header);
+            L2HeaderSH *broadcast_header= dynamic_cast<L2HeaderSH*>(header);
             if(broadcast_header->is_pkt_start && firstStartIndex < 0) {
                 firstStartIndex = idx;
             }

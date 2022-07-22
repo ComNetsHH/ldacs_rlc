@@ -106,17 +106,13 @@ L2Packet * Rlc::requestSegment(unsigned int num_bits, const MacId &mac_id) {
     auto process = getProcess(mac_id);
 
     if(process == nullptr) {
-        L2Packet* empty = new L2Packet();
-        L2HeaderBase* base_header = new L2HeaderBase(mac_id, 0, 0, 0, 0);
-        empty->addMessage(base_header, nullptr);
+        L2Packet* empty = new L2Packet();        
         return empty;
     }
 
     L2Packet* packet = process->getInjectedPacket();
     if(packet == nullptr) {
-        packet = new L2Packet();
-        L2HeaderBase* base_header = new L2HeaderBase(mac_id, 0, 0, 0, 0);
-        packet->addMessage(base_header, nullptr);
+        packet = new L2Packet();        
     }
 
     bool has_more_data = process->hasDataToSend();
