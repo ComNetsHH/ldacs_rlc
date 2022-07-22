@@ -104,15 +104,24 @@ void Rlc::receiveInjectionFromLower(L2Packet *packet, PacketPriority priority) {
 L2Packet * Rlc::requestSegment(unsigned int num_bits, const MacId &mac_id) {
     emit("rlc_bits_requested_from_lower", (double) num_bits);
     auto process = getProcess(mac_id);
+    bool is_broadcast = mac_id == SYMBOLIC_LINK_ID_BROADCAST;
 
     if(process == nullptr) {
         L2Packet* empty = new L2Packet();        
+        if (is_broadcast)
+            empty->addMessage(new L2HeaderSH(), nullptr);
+        else
+            empty->addMessage(new L2HeaderPP(), nullptr);            
         return empty;
     }
 
     L2Packet* packet = process->getInjectedPacket();
     if(packet == nullptr) {
         packet = new L2Packet();        
+        if (is_broadcast)
+            packet->addMessage(new L2HeaderSH(), nullptr);
+        else
+            packet->addMessage(new L2HeaderPP(), nullptr);            
     }
 
     bool has_more_data = process->hasDataToSend();
