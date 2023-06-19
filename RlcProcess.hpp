@@ -35,9 +35,14 @@ namespace TUHH_INTAIRNET_RLC {
 class RlcProcess: public IOmnetPluggable {
 protected:
     MacId dest = SYMBOLIC_ID_UNSET;
+
+    /** received packets from upper layer weiting to be sent **/
     deque<L3Packet *> packets_to_send;
+
+    /** packets injected from lower layers **/
     deque<L2Packet *> injected_packets;
 
+    /** received packets from lower layer wainting to be reassembled **/
     deque<PacketFragment> packets_received;
 
     /** maximum size of packet, if set all packets are at most this size **/
@@ -45,6 +50,7 @@ protected:
 
     /** indicate whether this is a brodacast process **/
     bool isBroadcast = false;
+    
 public:
     RlcProcess(MacId id);
     RlcProcess(MacId id, int max_packet_size);

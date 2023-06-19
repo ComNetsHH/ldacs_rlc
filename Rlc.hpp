@@ -36,6 +36,7 @@ protected:
     /** maximum size of packet, if set all packets are at most this size **/
     int max_packet_size = -1;
 
+    /** utilities for statistics **/
     int getTotalBitsToSend();
     int getTotalPacketsToSend();
 

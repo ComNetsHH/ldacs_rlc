@@ -143,9 +143,10 @@ L2Packet * Rlc::requestSegment(unsigned int num_bits, const MacId &mac_id) {
             unicast_header_size :
                       broadcast_header_size;
 
-    int counter = 0;
+    int maxFragments = 100;
+    int fragkmentCounter = 0;
 
-    while(has_more_data && counter < 100) {
+    while(has_more_data && fragkmentCounter < maxFragments) {
         pair<L2Header*, L2Packet::Payload*> data = process->getData(num_bits - packet->getBits());
         packet->addMessage(data.first, data.second);
 
@@ -156,8 +157,7 @@ L2Packet * Rlc::requestSegment(unsigned int num_bits, const MacId &mac_id) {
             has_more_data = false;
         }
 
-        // TODO: add unicast data to broadcast if there is space
-        counter++;
+        fragkmentCounter++;
         emit("rlc_packet_sent_down", (double) packet->getBits());
         emit("rlc_bits_to_send", (double)(getTotalBitsToSend()));
         emit("rlc_packets_to_send", (double)(getTotalPacketsToSend()));
