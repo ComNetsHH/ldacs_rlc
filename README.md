@@ -1,3 +1,5 @@
+[![DOI](https://zenodo.org/badge/654601470.svg)](https://zenodo.org/badge/latestdoi/654601470)
+    
     The L-Band Digital Aeronautical Communications System (LDACS) Radio Link Control (RLC) Library provides an implementation of RLC for the LDACS Air-Air Medium Access Control simulator.
     Copyright (C) 2023  Sebastian Lindner, Konrad Fuger, Musab Ahmed Eltayeb Ahmed, Andreas Timm-Giel, Institute of Communication Networks, Hamburg University of Technology, Hamburg, Germany
 
